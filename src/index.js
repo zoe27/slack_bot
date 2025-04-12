@@ -18,21 +18,43 @@ app.command('/create-task', async ({ command, ack, respond }) => {
   await ack();
 
   const task = command.text;
-
   console.log('收到任务:', task);
 
   try {
+    // 尝试同步任务到 Notion
     await syncTaskFromSlackToNotion(task);
+    
+    // 如果同步成功，反馈成功信息
     await respond({
       response_type: 'in_channel',
-      text: `任务 "${task}" 已经同步到 Notion！`
+      text: `任务 "${task}" 已经成功同步到 Notion！`
     });
   } catch (error) {
     console.error('同步任务到 Notion 失败:', error);
-    await respond({
-      response_type: 'ephemeral',
-      text: `任务同步失败，请稍后再试。`
-    });
+
+    // 判断错误类型，给出不同的反馈信息
+    if (error.message.includes('network')) {
+      await respond({
+        response_type: 'ephemeral',
+        text: `网络连接出现问题，任务同步失败。请检查网络并重试。`
+      });
+    } else if (error.message.includes('validation')) {
+      await respond({
+        response_type: 'ephemeral',
+        text: `任务格式错误，无法同步到 Notion。请确保任务格式正确后再试。`
+      });
+    } else if (error.message.includes('server')) {
+      await respond({
+        response_type: 'ephemeral',
+        text: `服务器错误，任务同步失败。请稍后再试。`
+      });
+    } else {
+      // 默认错误信息
+      await respond({
+        response_type: 'ephemeral',
+        text: `任务同步失败，发生未知错误。请稍后再试。`
+      });
+    }
   }
 });
 
