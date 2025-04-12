@@ -23,12 +23,14 @@ A lightweight Node.js proof-of-concept to sync task status changes in Notion to 
 2. **Install dependencies**
     npm install
 
-3. **Create .env file**
-    SLACK_BOT_TOKEN=xoxb-xxxx
-    SLACK_SIGNING_SECRET=your_singing_ser
-    NOTION_API_KEY=your_notion_token
-    NOTION_DATABASE_ID=your_database_id
-    SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx/yyy/zzz
+3. **Add environment variables**
+    cp .env.example .env
+    
+    Fill in your:
+        NOTION_API_KEY
+        NOTION_DATABASE_ID
+        SLACK_WEBHOOK_URL
+
 
 4. **Start the sync service:**
     node index.js
