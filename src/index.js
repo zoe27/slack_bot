@@ -36,6 +36,58 @@ app.command('/create-task', async ({ command, ack, respond }) => {
   }
 });
 
+
+// 监听 Slack 中的 /help 命令
+app.command('/sn-help', async ({ command, ack, respond }) => {
+  await ack();
+  await respond({
+    text: `:sparkles: *Welcome to the Task Management Help Guide!*
+
+Here are the available commands you can use:
+
+---
+
+*1. /create_task*  
+:page_with_curl: **Create a new task**  
+*Usage Example:* \`/create_task Task Name\`  
+_Define the task's name and start managing your projects._
+
+---
+
+*2. /update_task*  
+:pencil2: **Update an existing task**  
+*Usage Example:* \`/update_task Task Name New Status\`  
+_Change the status or other information of an ongoing task._
+
+---
+
+*3. /view_task*  
+:eyes: **View task details**  
+*Usage Example:* \`/view_task Task Name\`  
+_Quickly see the details of the task you're tracking._
+
+---
+
+*4. /status*  
+:bar_chart: **Check task status**  
+*Usage Example:* \`/status Task Name\`  
+_Follow up on progress and check if any updates are needed._
+
+---
+
+*5. /sn-help*  
+:question: **Display this help message**
+
+---
+
+:link: **For detailed documentation, visit**:  
+[Link to Documentation]
+
+Hope this guide helps you get the most out of our task management system! :tada:`
+  });
+});
+
+
 // 启动 Slack Bot
 (async () => {
   await app.start(process.env.PORT || 3000);
