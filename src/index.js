@@ -190,6 +190,46 @@ app.command('/update-task', async ({ command, ack, respond }) => {
 });
 
 
+app.command('/list-task', async ({ command, ack, respond }) => {
+  await ack();
+
+  try {
+    // 查询 Notion 数据库中的任务
+    const result = await notion.databases.query({
+      database_id: databaseId,
+    });
+
+    // 如果没有任务
+    if (!result.results.length) {
+      return await respond({
+        response_type: 'ephemeral',
+        text: '没有找到任何任务。',
+      });
+    }
+
+    // 生成任务列表
+    const taskList = result.results.map(task => {
+      const taskName = task.properties.Project.title[0]?.text.content || '无任务名';
+      const status = task.properties.Status.status.name || '无状态';
+      return `• ${taskName} - 状态: ${status}`;
+    }).join('\n');
+
+    // 返回任务列表
+    await respond({
+      response_type: 'in_channel',
+      text: `以下是所有任务:\n\n${taskList}`,
+    });
+  } catch (error) {
+    console.error('❌ 获取任务列表失败:', error);
+    await respond({
+      response_type: 'ephemeral',
+      text: `❌ 操作失败：${error?.message || '未知错误，请稍后再试。'}`,
+    });
+  }
+});
+
+
+
 
 // 启动 Slack Bot
 (async () => {
